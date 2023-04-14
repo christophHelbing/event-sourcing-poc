@@ -7,3 +7,5 @@
 tar -xf app/build/distributions/app.tar
 app/bin/app
 ```
+
+[Further Reading](docs/event-sourcing.md)
