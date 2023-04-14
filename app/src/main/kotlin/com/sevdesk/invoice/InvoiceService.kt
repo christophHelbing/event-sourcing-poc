@@ -6,6 +6,7 @@
 package com.sevdesk.invoice
 
 import arrow.core.Either
+import arrow.core.NonEmptyList
 import arrow.core.flatMap
 import arrow.core.raise.Raise
 import com.sevdesk.common.Failure
@@ -16,12 +17,14 @@ class InvoiceService(
         private val eventStore: EventStore,
 ) {
 
-    fun handleCommand(command: InvoiceCommand): Either<Failure, Unit> =
+    fun handleCommand(command: InvoiceCommand): Either<NonEmptyList<Failure>, Unit> =
             println("handling command ${command.javaClass.simpleName} with id ${command.invoiceId}")
                     .run {
                         eventStore.handleMutation(command.invoiceId) { events ->
-                            InvoiceAggregate.fromEvents(events)
-                                    .flatMap { it.handle(command) }
+                            InvoiceAggregate(events)
+                                    .flatMap {
+                                        it.handle(command)
+                                    }
                         }
                     }
 

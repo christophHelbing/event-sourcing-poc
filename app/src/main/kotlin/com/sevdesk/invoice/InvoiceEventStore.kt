@@ -6,6 +6,7 @@
 package com.sevdesk.invoice
 
 import arrow.core.Either
+import arrow.core.NonEmptyList
 import com.sevdesk.common.Failure
 import com.sevdesk.invoice.domain.InvoiceEvent
 import com.sevdesk.invoice.domain.URN
@@ -15,13 +16,13 @@ class EventStore {
     private val inMemoryEvents = mutableListOf<InvoiceEvent>()
 
     fun handleMutation(
-            aggregateId: URN,
-            createNewEvents: (List<InvoiceEvent>) -> Either<Failure, List<InvoiceEvent>>
-    ): Either<Failure, Unit> {
+        aggregateId: URN,
+        createNewEvents: (List<InvoiceEvent>) -> Either<NonEmptyList<Failure>, List<InvoiceEvent>>
+    ): Either<NonEmptyList<Failure>, Unit> {
         return createNewEvents(getEventsByAggregateId(aggregateId))
-                .map {
-                    inMemoryEvents.addAll(it)
-                }
+            .map {
+                inMemoryEvents.addAll(it)
+            }
     }
 
     private fun getEventsByAggregateId(aggregateId: URN): List<InvoiceEvent> {
