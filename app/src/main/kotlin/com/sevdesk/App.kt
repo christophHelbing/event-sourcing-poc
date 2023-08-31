@@ -19,6 +19,16 @@ fun main() {
         listOf(
             InvoiceCommand.CreateInvoiceCommand(URN("urn:invoice:1"), Currency.of(100)),
             InvoiceCommand.CreateInvoiceCommand(URN("urn:invoice:2"), Currency.of(200)),
+            InvoiceCommand.UpdateInvoiceAmountCommand(
+                URN("urn:invoice:2"),
+                amount = Currency.of(100)
+            ),
+            InvoiceCommand.UpdateInvoiceAmountCommand(
+                URN("urn:invoice:1"),
+                amount = Currency.of(100)
+            ),
+            InvoiceCommand.SentInvoiceCommand(URN("urn:invoice:1")),
+            InvoiceCommand.SentInvoiceCommand(URN("urn:invoice:2")),
             InvoiceCommand.PayInvoicePartiallyCommand(URN("urn:invoice:1"), Currency.of(50)),
             InvoiceCommand.PayInvoicePartiallyCommand(URN("urn:invoice:1"), Currency.of(50)),
             InvoiceCommand.PayInvoicePartiallyCommand(URN("urn:invoice:2"), Currency.of(150)),
@@ -34,7 +44,4 @@ fun main() {
                 println("Success")
             }
     }
-    println(eventStore)
-    eventStore.doSnapshot()
-    println(eventStore)
 }

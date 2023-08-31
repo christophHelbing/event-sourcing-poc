@@ -8,28 +8,44 @@ package com.sevdesk.invoice.domain
 sealed interface InvoiceEvent {
     enum class InvoiceEventName {
         InvoiceCreatedEvent,
-        InvoicePaidEVent,
+        InvoiceAmountUpdateEvent,
+        InvoiceCommitEvent,
+        InvoicePaidEvent,
     }
 
     val eventId: URN
     val aggregateId: URN
-    val amount: Currency
     val eventName: InvoiceEventName
 
     data class InvoiceCreatedEvent(
         override val eventId: URN = URN("urn:event:${java.util.UUID.randomUUID()}"),
         override val aggregateId: URN,
-        override val amount: Currency,
+        val amount: Currency,
     ) : InvoiceEvent {
         override val eventName: InvoiceEventName = InvoiceEventName.InvoiceCreatedEvent
+    }
+
+    data class InvoiceAmountUpdateEvent(
+        override val eventId: URN = URN("urn:event:${java.util.UUID.randomUUID()}"),
+        override val aggregateId: URN,
+        val amount: Currency,
+    ) : InvoiceEvent {
+        override val eventName: InvoiceEventName = InvoiceEventName.InvoiceAmountUpdateEvent
+    }
+
+    data class InvoiceCommitEvent(
+        override val eventId: URN = URN("urn:event:${java.util.UUID.randomUUID()}"),
+        override val aggregateId: URN,
+    ): InvoiceEvent {
+        override val eventName: InvoiceEventName = InvoiceEventName.InvoiceCommitEvent
     }
 
     data class InvoicePaidEvent(
         override val eventId: URN = URN("urn:event:${java.util.UUID.randomUUID()}"),
         override val aggregateId: URN,
-        override val amount: Currency,
+        val amount: Currency,
     ) : InvoiceEvent {
-        override val eventName: InvoiceEventName = InvoiceEventName.InvoicePaidEVent
+        override val eventName: InvoiceEventName = InvoiceEventName.InvoicePaidEvent
     }
 
     companion object {

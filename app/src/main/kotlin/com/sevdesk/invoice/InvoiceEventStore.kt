@@ -31,8 +31,14 @@ class EventStore(private val eventRepository: EventRepository) {
                         InvoiceEvent.InvoiceEventName.InvoiceCreatedEvent ->
                             event.payload.deserializeTo<InvoiceEvent.InvoiceCreatedEvent>()
 
-                        InvoiceEvent.InvoiceEventName.InvoicePaidEVent ->
+                        InvoiceEvent.InvoiceEventName.InvoicePaidEvent ->
                             event.payload.deserializeTo<InvoiceEvent.InvoicePaidEvent>()
+
+                        InvoiceEvent.InvoiceEventName.InvoiceAmountUpdateEvent ->
+                            event.payload.deserializeTo<InvoiceEvent.InvoiceAmountUpdateEvent>()
+
+                        InvoiceEvent.InvoiceEventName.InvoiceCommitEvent ->
+                            event.payload.deserializeTo<InvoiceEvent.InvoiceCommitEvent>()
                     }
                 }
                 inMemoryEvents.clear()
@@ -50,7 +56,7 @@ class EventStore(private val eventRepository: EventRepository) {
                 inMemoryEvents.addAll(it)
                 val events = it.map { invoiceEvent ->
                     Event(
-                        id = URN("urn:event:${UUID.randomUUID()}"),
+                        id = invoiceEvent.eventId,
                         eventName = invoiceEvent.eventName.name,
                         creationDate = OffsetDateTime.now(),
                         payload = invoiceEvent.serializeToString(),
