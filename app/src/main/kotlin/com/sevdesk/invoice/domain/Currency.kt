@@ -11,6 +11,8 @@ import java.math.BigInteger
 value class Currency(val amount: BigInteger) {
     operator fun compareTo(other: Currency): Int = amount.compareTo(other.amount)
 
+    operator fun plus(other: Currency): Currency = Currency(amount.plus(other.amount))
+
     companion object {
         fun of(amount: Int) = Currency(BigInteger.valueOf(amount.toLong()))
     }

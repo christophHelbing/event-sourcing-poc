@@ -7,9 +7,11 @@ package com.sevdesk.invoice
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
+import arrow.core.flatten
 import com.sevdesk.common.Failure
 import com.sevdesk.invoice.domain.InvoiceEvent
 import com.sevdesk.invoice.domain.URN
+import java.math.BigInteger
 
 class EventStore {
 
@@ -27,6 +29,27 @@ class EventStore {
 
     private fun getEventsByAggregateId(aggregateId: URN): List<InvoiceEvent> {
         return inMemoryEvents.filter { it.aggregateId == aggregateId }
+    }
+
+    override fun toString(): String {
+        return "-----------\nEventStore:\n${inMemoryEvents.joinToString(",\n")}\n-----------"
+    }
+
+    fun doSnapshot() {
+        val condensedEvents = inMemoryEvents
+            .groupBy { it.aggregateId }
+            .map { (id, events) ->
+                val reducedPaidEvents = events.filterIsInstance<InvoiceEvent.InvoicePaidEvent>()
+                    .reduce { acc, t ->
+                        InvoiceEvent.InvoicePaidEvent(
+                            aggregateId = t.aggregateId,
+                            amount = acc.amount + t.amount
+                        )
+                    }
+                id to events.filterIsInstance<InvoiceEvent.InvoiceCreatedEvent>() + reducedPaidEvents
+            }.toMap()
+        inMemoryEvents.clear()
+        inMemoryEvents.addAll(condensedEvents.values.flatten())
     }
 
 }
