@@ -9,13 +9,37 @@ import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.flatten
 import com.sevdesk.common.Failure
+import com.sevdesk.common.deserializeTo
+import com.sevdesk.common.serializeToString
 import com.sevdesk.invoice.domain.InvoiceEvent
+import com.sevdesk.invoice.domain.InvoiceEvent.Companion.resolveEventName
 import com.sevdesk.invoice.domain.URN
-import java.math.BigInteger
+import com.sevdesk.persistence.Event
+import com.sevdesk.persistence.EventRepository
+import java.time.OffsetDateTime
+import java.util.*
 
-class EventStore {
+class EventStore(private val eventRepository: EventRepository) {
 
     private val inMemoryEvents = mutableListOf<InvoiceEvent>()
+
+    init {
+        eventRepository.findByEventTypes(InvoiceEvent.names()).also {
+            it.onRight { events ->
+                val domainEvents = events.map { event ->
+                    when (event.eventName.resolveEventName()) {
+                        InvoiceEvent.InvoiceEventName.InvoiceCreatedEvent ->
+                            event.payload.deserializeTo<InvoiceEvent.InvoiceCreatedEvent>()
+
+                        InvoiceEvent.InvoiceEventName.InvoicePaidEVent ->
+                            event.payload.deserializeTo<InvoiceEvent.InvoicePaidEvent>()
+                    }
+                }
+                inMemoryEvents.clear()
+                inMemoryEvents.addAll(domainEvents)
+            }
+        }
+    }
 
     fun handleMutation(
         aggregateId: URN,
@@ -24,6 +48,15 @@ class EventStore {
         return createNewEvents(getEventsByAggregateId(aggregateId))
             .map {
                 inMemoryEvents.addAll(it)
+                val events = it.map { invoiceEvent ->
+                    Event(
+                        id = URN("urn:event:${UUID.randomUUID()}"),
+                        eventName = invoiceEvent.eventName.name,
+                        creationDate = OffsetDateTime.now(),
+                        payload = invoiceEvent.serializeToString(),
+                    )
+                }
+                eventRepository.saveEvents(events)
             }
     }
 

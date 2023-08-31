@@ -11,9 +11,10 @@ import com.sevdesk.invoice.InvoiceService
 import com.sevdesk.invoice.domain.Currency
 import com.sevdesk.invoice.domain.InvoiceCommand
 import com.sevdesk.invoice.domain.URN
+import com.sevdesk.persistence.EventRepository
 
 fun main() {
-    val eventStore = EventStore()
+    val eventStore = EventStore(EventRepository.instance())
     with(InvoiceService(eventStore)) {
         listOf(
             InvoiceCommand.CreateInvoiceCommand(URN("urn:invoice:1"), Currency.of(100)),
@@ -37,6 +38,3 @@ fun main() {
     eventStore.doSnapshot()
     println(eventStore)
 }
-
-/*
- */

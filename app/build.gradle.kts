@@ -8,6 +8,8 @@ repositories {
 }
 
 dependencies {
+    implementation("com.fasterxml.jackson.core:jackson-core:2.15.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
     implementation(platform(Dependencies.arrowStack))
     implementation(Dependencies.arrowCore)
     testImplementation(TestDependencies.kTestJunit)
