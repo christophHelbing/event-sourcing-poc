@@ -8,6 +8,7 @@ package com.sevdesk.invoice
 import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.flatMap
+import arrow.core.flatten
 import arrow.core.raise.Raise
 import com.sevdesk.common.Failure
 import com.sevdesk.invoice.domain.InvoiceCommand

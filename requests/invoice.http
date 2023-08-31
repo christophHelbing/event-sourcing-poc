@@ -1,0 +1,7 @@
+POST http://localhost:8080/invoice
+Content-Type: application/json
+
+{
+  "id": "urn:invoice:79729379",
+  "amount": 100
+}
