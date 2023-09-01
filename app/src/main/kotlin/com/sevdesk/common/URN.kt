@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
-package com.sevdesk.invoice.domain
+package com.sevdesk.common
 
 @JvmInline
 value class URN(

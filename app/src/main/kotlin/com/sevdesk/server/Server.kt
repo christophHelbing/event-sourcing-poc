@@ -2,9 +2,14 @@ package com.sevdesk.server
 
 import arrow.fx.coroutines.Resource
 import com.typesafe.config.ConfigFactory
-import io.ktor.server.application.*
-import io.ktor.server.config.*
-import io.ktor.server.engine.*
+import io.ktor.server.application.host
+import io.ktor.server.application.port
+import io.ktor.server.config.HoconApplicationConfig
+import io.ktor.server.engine.ApplicationEngine
+import io.ktor.server.engine.ApplicationEngineFactory
+import io.ktor.server.engine.applicationEngineEnvironment
+import io.ktor.server.engine.connector
+import io.ktor.server.engine.embeddedServer
 import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds

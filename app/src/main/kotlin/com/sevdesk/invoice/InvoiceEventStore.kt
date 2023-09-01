@@ -9,15 +9,14 @@ import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.flatten
 import com.sevdesk.common.Failure
+import com.sevdesk.common.URN
 import com.sevdesk.common.deserializeTo
 import com.sevdesk.common.serializeToString
 import com.sevdesk.invoice.domain.InvoiceEvent
 import com.sevdesk.invoice.domain.InvoiceEvent.Companion.resolveEventName
-import com.sevdesk.invoice.domain.URN
 import com.sevdesk.persistence.Event
 import com.sevdesk.persistence.EventRepository
 import java.time.OffsetDateTime
-import java.util.*
 
 class EventStore(private val eventRepository: EventRepository) {
 

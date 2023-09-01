@@ -6,11 +6,11 @@
 package com.sevdesk
 
 import arrow.core.flattenOrAccumulate
+import com.sevdesk.common.URN
 import com.sevdesk.invoice.EventStore
 import com.sevdesk.invoice.InvoiceService
 import com.sevdesk.invoice.domain.Currency
 import com.sevdesk.invoice.domain.InvoiceCommand
-import com.sevdesk.invoice.domain.URN
 import com.sevdesk.persistence.EventRepository
 
 fun main() {

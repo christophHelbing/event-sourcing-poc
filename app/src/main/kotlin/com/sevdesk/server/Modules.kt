@@ -1,8 +1,12 @@
 package com.sevdesk.server
 
+import com.sevdesk.accountsettings.accountSettingsModule
+import com.sevdesk.accountsettings.https.installAccountSettingsReadRoutes
+import com.sevdesk.accountsettings.https.installAccountSettingsWriteRoutes
 import com.sevdesk.invoice.installInvoiceRoutes
 import com.sevdesk.invoice.invoiceModule
-import io.ktor.server.application.*
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
 import org.koin.core.Koin
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
@@ -19,6 +23,7 @@ fun Application.modules() {
         slf4jLogger()
         val app = modules(
             invoiceModule(),
+            accountSettingsModule(),
         )
         GlobalKoinContext.koin = app.koin
     }
@@ -29,4 +34,6 @@ fun Application.modules() {
 
 private fun Application.installRoutes() {
     installInvoiceRoutes()
+    installAccountSettingsWriteRoutes()
+    installAccountSettingsReadRoutes()
 }

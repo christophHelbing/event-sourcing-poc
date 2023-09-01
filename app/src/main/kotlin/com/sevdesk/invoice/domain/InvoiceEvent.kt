@@ -5,6 +5,8 @@
  */
 package com.sevdesk.invoice.domain
 
+import com.sevdesk.common.URN
+
 sealed interface InvoiceEvent {
     enum class InvoiceEventName {
         InvoiceCreatedEvent,

@@ -1,6 +1,6 @@
 package com.sevdesk.persistence
 
-import com.sevdesk.invoice.domain.URN
+import com.sevdesk.common.URN
 import java.time.OffsetDateTime
 
 data class Event (

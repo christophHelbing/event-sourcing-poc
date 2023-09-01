@@ -1,0 +1,41 @@
+POST http://localhost:8080/accountsettings
+Content-Type: application/json
+
+{
+  "userId": "urn:accountsettings:1",
+  "firstname": "Christoph",
+  "lastname": "Manig",
+  "taxationType": "IST",
+  "profitAssessment": "EUR"
+}
+
+###
+PUT http://localhost:8080/accountsettings
+Content-Type: application/json
+
+{
+  "userId": "urn:accountsettings:1",
+  "firstname": "Christina"
+}
+
+###
+PUT http://localhost:8080/accountsettings/lastname
+Content-Type: application/json
+
+{
+  "userId": "urn:accountsettings:1",
+  "lastname": "Helbing"
+}
+
+###
+PUT http://localhost:8080/accountsettings/taxationtype
+Content-Type: application/json
+
+{
+  "userId": "urn:accountsettings:1",
+  "taxationType": "IST"
+}
+
+###
+GET http://localhost:8080/accountsettings/urn:accountsettings:1
+Content-Type: application/json
