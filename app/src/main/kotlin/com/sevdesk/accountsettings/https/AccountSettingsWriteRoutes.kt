@@ -1,22 +1,29 @@
 package com.sevdesk.accountsettings.https
 
+import arrow.core.leftNel
 import arrow.core.raise.either
+import arrow.core.right
 import com.sevdesk.accountsettings.AccountSettingsWriteService
 import com.sevdesk.accountsettings.domain.AccountSettingsCommand
 import com.sevdesk.accountsettings.domain.ProfitAssessment
 import com.sevdesk.accountsettings.domain.TaxationType
+import com.sevdesk.common.CommonFailure
 import com.sevdesk.common.URN
 import com.sevdesk.common.receiveDto
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
+import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
-import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import kotlinx.serialization.Serializable
 import org.koin.ktor.ext.inject
+
+private const val FIRST_NAME = "firstname"
+private const val LAST_NAME = "lastname"
+private const val TAXATION_TYPE = "taxationType"
 
 fun Application.installAccountSettingsWriteRoutes() {
     val accountSettingsService by inject<AccountSettingsWriteService>()
@@ -42,48 +49,30 @@ fun Application.installAccountSettingsWriteRoutes() {
                 }
             }
 
-            // TODO Refactor the put endpoints to one endpoint which consume a map to change the certain attribute
-            put {
+            patch {
                 either {
-                    val dto = receiveDto<UpdateFirstnameDto>().bind()
-                    accountSettingsService.handleCommand(
-                        AccountSettingsCommand.UpdateFirstnameCommand(
+                    val dto = receiveDto<UpdateAccountSettings>().bind()
+                    val command = when (dto.changes.keys.first()) {
+                        FIRST_NAME -> AccountSettingsCommand.UpdateFirstnameCommand(
                             userId = URN(dto.userId),
-                            firstname = dto.firstname,
-                        )
-                    )
-                }.fold({
-                    call.respond(HttpStatusCode.BadRequest, it)
-                }) {
-                    call.respond(HttpStatusCode.Accepted)
-                }
-            }
+                            firstname = dto.changes[FIRST_NAME]!!,
+                        ).right()
 
-            put("/lastname") {
-                either {
-                    val dto = receiveDto<UpdateLastnameDto>().bind()
-                    accountSettingsService.handleCommand(
-                        AccountSettingsCommand.UpdateLastnameCommand(
+                        LAST_NAME -> AccountSettingsCommand.UpdateLastnameCommand(
                             userId = URN(dto.userId),
-                            lastname = dto.lastname,
-                        )
-                    )
-                }.fold({
-                    call.respond(HttpStatusCode.BadRequest, it)
-                }) {
-                    call.respond(HttpStatusCode.Accepted)
-                }
-            }
+                            lastname = dto.changes[LAST_NAME]!!
+                        ).right()
 
-            put("/taxationtype") {
-                either {
-                    val dto = receiveDto<UpdateTaxationTypeDto>().bind()
-                    accountSettingsService.handleCommand(
-                        AccountSettingsCommand.UpdateTaxationTypeCommand(
+                        TAXATION_TYPE -> AccountSettingsCommand.UpdateTaxationTypeCommand(
                             userId = URN(dto.userId),
-                            taxationType = TaxationType.valueOf(dto.taxationType),
-                        )
-                    )
+                            taxationType = TaxationType.valueOf(dto.changes[TAXATION_TYPE]!!),
+                        ).right()
+
+                        else -> CommonFailure.NotFoundFailure(
+                            "Map does not contain one of the accepted changable attributes"
+                        ).leftNel()
+                    }.bind()
+                    accountSettingsService.handleCommand(command)
                 }.fold({
                     call.respond(HttpStatusCode.BadRequest, it)
                 }) {
@@ -93,23 +82,10 @@ fun Application.installAccountSettingsWriteRoutes() {
         }
     }
 }
-
 @Serializable
-data class UpdateTaxationTypeDto (
+data class UpdateAccountSettings(
     val userId: String,
-    val taxationType: String,
-)
-
-@Serializable
-data class UpdateFirstnameDto(
-    val userId: String,
-    val firstname: String,
-)
-
-@Serializable
-data class UpdateLastnameDto(
-    val userId: String,
-    val lastname: String,
+    val changes: Map<String, String>,
 )
 
 @Serializable

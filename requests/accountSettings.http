@@ -10,30 +10,36 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:8080/accountsettings
+PATCH http://localhost:8080/accountsettings
 Content-Type: application/json
 
 {
   "userId": "urn:accountsettings:1",
-  "firstname": "Christina"
+  "changes": {
+      "firstname": "Till"
+    }
 }
 
 ###
-PUT http://localhost:8080/accountsettings/lastname
+PATCH http://localhost:8080/accountsettings
 Content-Type: application/json
 
 {
   "userId": "urn:accountsettings:1",
-  "lastname": "Helbing"
+  "changes": {
+      "lastname": "Helbing"
+    }
 }
 
 ###
-PUT http://localhost:8080/accountsettings/taxationtype
+PATCH http://localhost:8080/accountsettings
 Content-Type: application/json
 
 {
   "userId": "urn:accountsettings:1",
-  "taxationType": "IST"
+  "changes": {
+      "taxationType": "SOLL"
+    }
 }
 
 ###
